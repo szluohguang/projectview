@@ -14,7 +14,7 @@
                 <td>{{projMember}}</td>
             </tr>
         </table>
-        <router-link :to="{name:'inputprojinfo'}"></router-link>   
+        <el-button @click="handleInputProjView">新增项目</el-button> 
     </el-row>
 
     <p></p>
@@ -23,56 +23,73 @@
 <!-- 项目信息详细列表 -->
     <el-table
       :data="tableData"
+      show-summary
+      fit
       style="width: 100%"
       stripe="true"
-      height="200"
+
       border="true"
       >
         <el-table-column
             fixed
+            sortable
             label="项目名称"
-            width="100"
+            min-width="100"
             prop="projName">
         </el-table-column>
         <el-table-column
             fixed
             label="子项目"
-            width="180"
+            min-width="180"
             prop="subProj">
         </el-table-column>
         <el-table-column
+            sortable
             label="负责人"
-            width="80"
+            min-width="80"
             prop="projOwner">
         </el-table-column>
       <el-table-column
+        sortable
         label="开始日期"
-        width="120"
+        min-width="120"
         prop="startDate">
       </el-table-column>
         <el-table-column
             label="结束日期"
-            width="120"
+            min-width="120"
             prop="finishDate">
         </el-table-column>
         <el-table-column
+            sortable
             label="内编"
-            width="60"
+            min-width="60"
             prop="staff">
         </el-table-column>
         <el-table-column
+            sortable
             label="外包"
-            width="60"
+            min-width="60"
             prop="outStaff">
         </el-table-column>
         <el-table-column
+            sortable
             label="状态"
-            width="50"
+            min-width="50"
             >
             <template slot-scope="scope">
                 <el-tag>
                     {{scope.row.status}}
                 </el-tag>
+            </template>
+        </el-table-column>
+        <el-table-column
+            fixed="right"
+            label="操作"
+            min-width="100">
+            <template slot-scope="scope">
+                <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
+                <el-button @click="handleEditProj(scope.$index, scope.row.projName, scope.row.subProj )" type="text" size="small">编辑</el-button>
             </template>
         </el-table-column>
     </el-table>
@@ -93,7 +110,8 @@
                     finishDate: '2019-12-31',
                     staff: 20,
                     outStaff: 12,
-                    status: 4
+                    status: 4,
+                    memo: ''
                 },
                 {
                     projName:'快乐平安',
@@ -103,7 +121,8 @@
                     finishDate: '2019-12-31',
                     staff: 26,
                     outStaff: 0,
-                    status: 2
+                    status: 2,
+                    memo: ''
                 },
                 {
                     projName:'Askbob',
@@ -113,17 +132,19 @@
                     finishDate: '2020-02-28',
                     staff: 6,
                     outStaff: 10,
-                    status: 3
+                    status: 3,
+                    memo: ''
                 },
                 {
-                    projName:'Askbob',
+                     projName:'Askbob',
                     subProj: '数据平台',
                     projOwner: '彭珺',
                     startDate: '2019-08-01',
                     finishDate: '2019-12-31',
                     staff: 5,
                     outStaff: 3,
-                    status: 2
+                    status: 2,
+                    memo: ''
                 },
                 {
                     projName:'办公升级',
@@ -133,7 +154,8 @@
                     finishDate: '2019-12-31',
                     staff: 10,
                     outStaff: 9,
-                    status: 1
+                    status: 1,
+                    memo: ''
                 },
                 {
                     projName:'办公升级',
@@ -143,7 +165,8 @@
                     finishDate: '2019-12-31',
                     staff: 6,
                     outStaff: 3,
-                    status: 1
+                    status: 1,
+                    memo: ''
                 }
             ],
             message: '快乐平安部门项目信息展示：',
@@ -153,18 +176,44 @@
         
       },
         methods: {
+            created() {
+                this.axios.get('/findall').then((response)=>{
+                    console.log(response.data)
+                }).catch((response)=>{
+                    console.log(response)
+                })
+            },
             getStatusIcon(status) {
                 if( status == 1 ) {
                     return "<i class='el-icon-time'></i>";
                 }
             },
             handleInputProjView() {
-                let routeDate = this.$router.resolve({
-                    name: "InputProjInfo",
-                    query:params,
-                    params:''
-                });
-                window.open( routeDate.href,'_blank');
+                /*
+                    this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning'
+                        }).then(() => {
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功!'
+                        });
+                        }).catch(() => {
+                        this.$message({
+                            type: 'info',
+                            message: '已取消删除'
+                        });          
+                    });
+                    */
+                this.$router.push('/InputProjInfo');
+            },
+            handleEditProj( index, name, sub ) {
+                var str = name + sub ;
+                this.$message({
+                                type: 'info',
+                                message: str
+                            });
             }
         }
 

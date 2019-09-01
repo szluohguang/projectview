@@ -2,7 +2,7 @@
     <div>
         <!-- 输入项目信息 -->
         
-        <el-form ref="form" :model="projInfo" label-width="80px">
+        <el-form ref="form" :model="projInfo" status-icon :rules="rules" label-width="120px">
             <el-form-item label="项目名称：">
                 <el-input v-model="projInfo.projName"></el-input>
             </el-form-item>
@@ -19,8 +19,8 @@
                 </el-col>
                 <el-col class="line" :span="2">-</el-col>
                 <el-col :span="11">
-                    <el-time-picker placeholder="结束时间" 
-                        v-model="projInfo.finishDate" style="width: 100%;"></el-time-picker>
+                    <el-date-picker type="date" placeholder="结束时间" 
+                        v-model="projInfo.finishDate" style="width: 100%;"></el-date-picker>
                 </el-col>
             </el-form-item>
             <el-form-item label="内编：">
@@ -54,6 +54,23 @@
     export default {
         name: 'InputProjInfo',
         data() {
+            var checkInput = (rule, value, callback) => {
+                if (!value) {
+                    return callback(new Error('不能为空'));
+                }
+            };
+            var checkInputNumber = (rule, value, callback) => {
+                if (!value) {
+                    return callback(new Error('不能为空'));
+                }
+                setTimeout(() => {
+                        if (!Number.isInteger(value)) {
+                            callback(new Error('请输入数字值'));
+                        } else {
+                            callback();
+                        }
+                    }, 1000);
+            };
             return {
                 projInfo: {
                     projName: '',
@@ -65,21 +82,70 @@
                     outStaff: '',
                     projStatus: '',
                     projMemo: ''
+                },
+                rules: {
+                    projName: [
+                        { validator: checkInput, trigger: 'blur' }
+                    ],
+                    subProj: [
+                        { validator: checkInput, trigger: 'blur' }
+                    ],
+                    projOwner: [
+                        { validator: checkInput, trigger: 'blur' }
+                    ],
+                    staff: [
+                        { validator: checkInputNumber, trigger: 'blur' }
+                    ],
+                    outStaff: [
+                        { validator: checkInputNumber, trigger: 'blur' }
+                    ]
                 }
-            }
+            };
+
         },
         methods: {
             onSubmit( info ) {
-                infomessage = info.projName + info.subProj + info.projOwner + info.startDate + info.finishDate + info.staff + info.outStaff + info.projStatus;
-                this.$alert( infomessage, '项目信息', {
-                    confirmButtonText: '确定',
-                    callback: action => {
-                        this.$message({
-                            type: 'info',
-                            message: `action: ${ action }`
-                        });
-                    }
+                var that = this;
+/*
+                var msg = that.projInfo.projName;
+                console.log( msg );
+                this.$alert( msg, '标题名称', {
+                confirmButtonText: '确定',
+                callback: action => {
+                    this.$message({
+                    type: 'info',
+                    message: `action: ${ action }`
+                    });
+                }
                 });
+*/
+                var infomessage = that.projInfo.projName;
+                var typestr ='success';
+                if( infomessage == "" ) {
+                    infomessage = "没有输入项目名称";
+                    typestr ='error';
+                    this.$alert( infomessage, '项目信息', {
+                    confirmButtonText: '确定',
+                    type: typestr
+                });
+                }
+                else {
+                    infomessage = that.projInfo.projName + that.projInfo.subProj + that.projInfo.projOwner + that.projInfo.startDate + that.projInfo.finishDate + that.projInfo.staff + that.projInfo.outStaff + that.projInfo.projStatus;
+                    typestr ='success';
+                    
+                    this.$alert( infomessage, '项目信息', {
+                        confirmButtonText: '确定',
+                        type: typestr,
+                        callback: action => {
+                            this.$message({
+                                type: 'info',
+                                message: `保持成功!`
+                            });
+                        }
+                    });
+                }
+                
+
             }
         }
     }
